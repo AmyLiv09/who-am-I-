@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Who Am I? Government Edition</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 12px;
+      text-align: center;
+      background: white;
+    }
+
+    #game-board {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #board-image {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .card {
+      position: absolute;
+      border: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .card:hover {
+      outline: 2px solid #2563eb;
+      outline-offset: -2px;
+    }
+
+    .card:focus-visible {
+      outline: 3px solid #2563eb;
+    }
+
+    .card.eliminated {
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .card.eliminated::after {
+      content: "✕";
+      color: #dc2626;
+      font-size: clamp(20px, 4vw, 52px);
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    #reset-button {
+      margin-top: 18px;
+      padding: 12px 24px;
+      background: #243b63;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #reset-button:hover {
+      opacity: 0.9;
+    }
+
+    #status {
+      color: #444;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="game-board">
+
+    <img
+      id="board-image"
+      src="guess who government edition (1).png"
+      alt="Who Am I? Government Edition game board"
+    >
+
+    <div id="clickable-cards"></div>
+
+  </div>
+
+  <button id="reset-button" type="button">
+    Reset Board
+  </button>
+
+  <p id="status">0 of 28 cards eliminated</p>
+
+  <script>
+
+    /*
+      WHO AM I? GOVERNMENT EDITION
+      Interactive Game Board
+
+      Board layout:
+      7 columns
+      4 rows
+      28 total cards
+    */
+
+    const IMAGE_WIDTH = 1649;
+    const IMAGE_HEIGHT = 928;
+
+    const cardNames = [
+      "President",
+      "State Government",
+      "Governor",
+      "Board of Supervisors",
+      "U.S. Senate",
+      "Mayor",
+      "VA House of Delegates",
+
+      "City Council",
+      "Virginia Senate",
+      "Manager",
+      "U.S. House of Representatives",
+      "Town Council",
+      "Supreme Court of Virginia",
+      "School Board",
+
+      "National Government",
+      "City Charter",
+      "U.S. Supreme Court",
+      "Congress",
+      "General Assembly",
+      "U.S. Constitution",
+      "U.S. Cabinet",
+
+      "Virginia Constitution",
+      "Lt. Governor and Attorney General",
+      "Tribal Government",
+      "Local Government",
+      "Virginia Cabinet",
+      "Virginia Regulatory Boards",
+      "Citizens"
+    ];
+
+    /*
+      Card positions based on the original
+      1649 x 928 Canva game-board image.
+    */
+
+    const FIRST_X = 46;
+    const FIRST_Y = 198;
+
+    const CARD_WIDTH = 205;
+    const CARD_HEIGHT = 145;
+
+    const COLUMN_SPACING = 225;
+    const ROW_SPACING = 184;
+
+    const cardsContainer =
+      document.getElementById("clickable-cards");
+
+    const status =
+      document.getElementById("status");
+
+
+    /*
+      Update the eliminated-card counter.
+    */
+
+    function updateStatus() {
+
+      const eliminated =
+        document.querySelectorAll(".card.eliminated").length;
+
+      status.textContent =
+        eliminated + " of 28 cards eliminated";
+    }
+
+
+    /*
+      Create the 28 invisible clickable
+      buttons over the Canva game board.
+    */
+
+    cardNames.forEach(function(name, index) {
+
+      const row = Math.floor(index / 7);
+      const column = index % 7;
+
+      const x =
+        FIRST_X + column * COLUMN_SPACING;
+
+      const y =
+        FIRST_Y + row * ROW_SPACING;
+
+      const button =
+        document.createElement("button");
+
+      button.type = "button";
+
+      button.className = "card";
+
+      button.setAttribute(
+        "aria-label",
+        "Eliminate or restore " + name
+      );
+
+      button.setAttribute(
+        "aria-pressed",
+        "false"
+      );
+
+      button.title = name;
+
+
+      /*
+        Convert the original pixel measurements
+        into percentages so the clickable areas
+        resize with the game board.
+      */
+
+      button.style.left =
+        (x / IMAGE_WIDTH * 100) + "%";
+
+      button.style.top =
+        (y / IMAGE_HEIGHT * 100) + "%";
+
+      button.style.width =
+        (CARD_WIDTH / IMAGE_WIDTH * 100) + "%";
+
+      button.style.height =
+        (CARD_HEIGHT / IMAGE_HEIGHT * 100) + "%";
+
+
+      /*
+        Clicking a card adds/removes
+        the elimination X.
+      */
+
+      button.addEventListener(
+        "click",
+        function() {
+
+          const eliminated =
+            button.classList.toggle("eliminated");
+
+          button.setAttribute(
+            "aria-pressed",
+            String(eliminated)
+          );
+
+          updateStatus();
+        }
+      );
+
+      cardsContainer.appendChild(button);
+    });
+
+
+    /*
+      RESET BOARD
+      Removes every X and resets the counter.
+    */
+
+    document
+      .getElementById("reset-button")
+      .addEventListener(
+        "click",
+        function() {
+
+          document
+            .querySelectorAll(".card")
+            .forEach(function(card) {
+
+              card.classList.remove(
+                "eliminated"
+              );
+
+              card.setAttribute(
+                "aria-pressed",
+                "false"
+              );
+
+            });
+
+          updateStatus();
+
+        }
+      );
+
+  </script>
+
+</body>
+</html>
