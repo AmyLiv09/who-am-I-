@@ -96,7 +96,7 @@
 
     <img
       id="board-image"
-      src="guess who government edition (1).png"
+      src="game-board.png"
       alt="Who Am I? Government Edition game board"
     >
 
@@ -112,19 +112,11 @@
 
   <script>
 
-    /*
-      WHO AM I? GOVERNMENT EDITION
-      Interactive Game Board
-
-      Board layout:
-      7 columns
-      4 rows
-      28 total cards
-    */
-
+    // Original Canva game-board dimensions
     const IMAGE_WIDTH = 1649;
     const IMAGE_HEIGHT = 928;
 
+    // 28 cards: 7 columns x 4 rows
     const cardNames = [
       "President",
       "State Government",
@@ -159,11 +151,7 @@
       "Citizens"
     ];
 
-    /*
-      Card positions based on the original
-      1649 x 928 Canva game-board image.
-    */
-
+    // Clickable-card measurements
     const FIRST_X = 46;
     const FIRST_Y = 198;
 
@@ -180,10 +168,7 @@
       document.getElementById("status");
 
 
-    /*
-      Update the eliminated-card counter.
-    */
-
+    // Update eliminated-card counter
     function updateStatus() {
 
       const eliminated =
@@ -194,11 +179,7 @@
     }
 
 
-    /*
-      Create the 28 invisible clickable
-      buttons over the Canva game board.
-    */
-
+    // Create all 28 clickable areas
     cardNames.forEach(function(name, index) {
 
       const row = Math.floor(index / 7);
@@ -230,11 +211,8 @@
       button.title = name;
 
 
-      /*
-        Convert the original pixel measurements
-        into percentages so the clickable areas
-        resize with the game board.
-      */
+      // Convert pixel positions to percentages
+      // so the clickable areas resize with the image
 
       button.style.left =
         (x / IMAGE_WIDTH * 100) + "%";
@@ -249,10 +227,7 @@
         (CARD_HEIGHT / IMAGE_HEIGHT * 100) + "%";
 
 
-      /*
-        Clicking a card adds/removes
-        the elimination X.
-      */
+      // Eliminate or restore card
 
       button.addEventListener(
         "click",
@@ -274,10 +249,7 @@
     });
 
 
-    /*
-      RESET BOARD
-      Removes every X and resets the counter.
-    */
+    // Reset entire board
 
     document
       .getElementById("reset-button")
@@ -289,9 +261,7 @@
             .querySelectorAll(".card")
             .forEach(function(card) {
 
-              card.classList.remove(
-                "eliminated"
-              );
+              card.classList.remove("eliminated");
 
               card.setAttribute(
                 "aria-pressed",
